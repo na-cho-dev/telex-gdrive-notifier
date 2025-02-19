@@ -27,7 +27,7 @@ jobs:
 
     - name: Deploy via SSH
       run: |
-        ssh ${{ secrets.DO_SSH_USER }}@${{ secrets.DO_SERVER_IP }} << 'EOF'
+        ssh -o StrictHostKeyChecking=no ${{ secrets.DO_SSH_USER }}@${{ secrets.DO_SERVER_IP }} << 'EOF'
             set -e  # Exit immediately if any command fails
 
             PROJECT_DIR="/root/telex-gdrive-notifier"
