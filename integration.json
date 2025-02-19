@@ -1,0 +1,15 @@
+curl --location https://e9fe-197-211-63-6.ngrok-free.app/telex-webhook \
+--header 'Content-Type: application/json' \
+--data '{
+    "channel_id": "<your-test-telex-channel-id>",
+    "return_url": "https://ping.telex.im/v1/return/<your-test-telex-channel-id>",
+    "settings": [
+          {"label": "interval", "type": "text", "required": true, "default": "*/0.1 * * * *"},
+          {
+            "label": "Folder ID",
+            "type": "text",
+            "required": true,
+            "default": ""
+          }
+    ]
+}'

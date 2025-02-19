@@ -30,7 +30,7 @@ const jsonIntegration = (req, res) => {
             "default": ""
           }
         ],
-        "target_url": `${process.env.TELEX_TARGET_URL}/0194ff2f-dd2a-748d-ae91-1cb09a3b4eb4`,
+        "target_url": ``,
         "tick_url": `${process.env.TELEX_APP_URL}/telex-webhook`
       }
     }
