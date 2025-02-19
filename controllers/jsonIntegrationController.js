@@ -13,6 +13,7 @@ const jsonIntegration = (req, res) => {
           "background_color": "#fff"
         },
         "is_active": true,
+        "integration_category": "Cloud Services",
         "integration_type": "interval",
         "key_features": [
           "Folder Backup",
