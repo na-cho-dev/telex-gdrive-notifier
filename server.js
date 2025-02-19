@@ -2,6 +2,7 @@ import express from 'express'
 import { google } from 'googleapis'
 import path from 'path'
 import jsonIntegrationRouter from './routers/jsonIntegrationRouter.js'
+import telexWebhookRouter from './routers/telexWebhookRouter.js'
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -9,6 +10,7 @@ const serviceAccountPath = process.env.GOOGLE_SERVICE_ACCOUNT_PATH
 
 app.use(express.json());
 app.use(jsonIntegrationRouter)
+app.use(telexWebhookRouter)
 
 app.get('/', (req, res) => {
     res.status(200).json({message: 'Telex Drive Backup Notofier!'});
