@@ -8,7 +8,7 @@ const jsonIntegration = (req, res) => {
         "descriptions": {
           "app_name": "Telex GDrive Notifier",
           "app_description": "Telex GDrive Notifier is a lightweight service that monitors Google Drive and sends real-time backup notifications to a Telex Channel 🚀",
-          "app_logo": "https://imgur.com/a/S2KPQ3W",
+          "app_logo": "https://iili.io/2ybBmwQ.png",
           "app_url": process.env.TELEX_APP_URL,
           "background_color": "#fff"
         },
@@ -22,18 +22,7 @@ const jsonIntegration = (req, res) => {
         ],
         "author": "NachoDev",
         "settings": [
-          {
-            "label": "Time Interval",
-            "type": "dropdown",
-            "required": true,
-            "default": "1min",
-            "options": [
-              "1min",
-              "2min",
-              "5min",
-              "10min"
-            ]
-          },
+          {"label": "interval", "type": "text", "required": true, "default": "* * * * *"},
           {
             "label": "Folder ID",
             "type": "text",

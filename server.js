@@ -28,6 +28,6 @@ const drive = google.drive({ version: "v3", auth });
 //     console.log(res.data);
 // })();
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server is running on PORT ${PORT} : host http://localhost:${PORT}`);
 });
