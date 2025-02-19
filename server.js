@@ -1,6 +1,7 @@
 import express from 'express'
 import { google } from 'googleapis'
 import path from 'path'
+// import bodyParser from 'body-parser'
 import jsonIntegrationRouter from './routers/jsonIntegrationRouter.js'
 import telexWebhookRouter from './routers/telexWebhookRouter.js'
 
@@ -9,6 +10,7 @@ const PORT = process.env.PORT || 3000;
 const serviceAccountPath = process.env.GOOGLE_SERVICE_ACCOUNT_PATH
 
 app.use(express.json());
+// app.use(bodyParser)
 app.use(jsonIntegrationRouter)
 app.use(telexWebhookRouter)
 

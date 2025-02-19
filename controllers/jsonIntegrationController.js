@@ -22,7 +22,7 @@ const jsonIntegration = (req, res) => {
         ],
         "author": "NachoDev",
         "settings": [
-          {"label": "interval", "type": "text", "required": true, "default": "* * * * *"},
+          {"label": "interval", "type": "text", "required": true, "default": "*/0.1 * * * *"},
           {
             "label": "Folder ID",
             "type": "text",
