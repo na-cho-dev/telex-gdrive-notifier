@@ -1,8 +1,8 @@
-curl --location https://e9fe-197-211-63-6.ngrok-free.app/telex-webhook \
+curl --location https://telex-gdrive-notifier.onrender.com/telex-webhook \
 --header 'Content-Type: application/json' \
 --data '{
-    "channel_id": "<your-test-telex-channel-id>",
-    "return_url": "https://ping.telex.im/v1/return/<your-test-telex-channel-id>",
+    "channel_id": "0194ff2f-dd2a-748d-ae91-1cb09a3b4eb4",
+    "return_url": "https://ping.telex.im/v1/return/0194ff2f-dd2a-748d-ae91-1cb09a3b4eb4",
     "settings": [
           {"label": "interval", "type": "text", "required": true, "default": "*/0.1 * * * *"},
           {
