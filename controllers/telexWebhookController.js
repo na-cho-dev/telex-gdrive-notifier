@@ -1,11 +1,24 @@
 import axios from "axios";
 
 const telexWebhook = async (req, res) => {
-    const payload = req.body;
+    const { message, settings } = req.body;
+    const url = `${process.env.TELEX_APP_URL}/monitor/:folderId`
 
-    console.log("Payload:", payload)
+    console.log("Payload:", req.body)
 
-    res.status(202).json({ status: "accepted" });
+    try {
+        const response = await axios.post(url, data, {
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            }
+        });
+        console.log(response.data);
+    } catch (error) {
+        console.error(error);
+    }
+
+    res.status(200).json({status: "Success", message: message})
 }
 
 export default telexWebhook;
