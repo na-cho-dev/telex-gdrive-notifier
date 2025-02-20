@@ -27,6 +27,32 @@ const auth = new google.auth.GoogleAuth({
 
 const drive = google.drive({ version: "v3", auth });
 
+// Function to get files in a folder
+async function listFiles(folderId) {
+    try {
+        const res = await drive.files.list({
+            q: `'${folderId}' in parents and trashed=false`,
+            fields: "files(id, name, mimeType, modifiedTime)",
+        });
+
+        return res.data.files;
+    } catch (error) {
+        console.error("Error fetching files:", error);
+        return [];
+    }
+}
+
+app.get("/monitor/:folderId", async (req, res) => {
+    const folderId = req.params.folderId;
+    const files = await listFiles(folderId);
+    
+    if (files.length === 0) {
+        return res.json({ message: "No files found in the folder." });
+    }
+
+    res.json({ files });
+});
+
 // (async () => {
 //     const res = await drive.files.list();
 //     console.log(res.data);
