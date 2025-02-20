@@ -1,7 +1,7 @@
 const jsonIntegration = (req, res) => {
 
   const baseUrl = req.protocol + "://" + req.get("host");
-  console.log("Base URL:", baseUrl)
+  console.log("Base URL:", req.protocol)
 
   const integration_json_data = {
     "data": {
