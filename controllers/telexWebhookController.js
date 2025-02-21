@@ -1,56 +1,39 @@
-import axios from "axios";
+import { getChanges } from "../service/googleDriveService.js";
+import redisClient from "../database/redisClient.js";
+import { dataStore } from "../service/dataStore.js";
+import { sendNotification } from "../service/sendNotification.js";
 
-export const telexWebhook = async (req, res) => {
-    const { channel_id, return_url, settings } = req.body;
-    const baseUrl = req.protocol + "://" + req.get("host");
 
-    export const folderId = settings.find(setting => setting.label === 'Folder ID')?.default;
-    // console.log("Payload:", req.body)
-    // console.log("Folder ID:", folderId)
-    export const monitorUrl = `${baseUrl}/monitor/${folderId}`
-
+const telexWebhook = async (req, res) => {
     try {
-        const response = await axios.get(monitorUrl, {
-            headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json"
-            }
-        });
-        console.log(response.data);
-    } catch (error) {
-        console.error(error);
-    }
+        const { channel_id, return_url, settings } = req.body;
+        const baseURL = req.protocol + "://" + req.get("host");
+        const folderId = settings.find(setting => setting.label === "Folder ID")?.default;
 
-    const data = {
-        "event_name": "Google Drive Notifier",
-        "message": "No Current File To Backup",
-        "status": "success",
-        "username": "Telex GDrive Backup Notifier Bot"
-    };
-
-    const sendRequest = async () => {
-        try {
-            const response = await fetch(return_url, {
-                method: "POST",
-                headers: {
-                    "Accept": "application/json",
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(data)
-            });
-
-            const result = await response.json();
-            // console.log("Result:", result);
-        } catch (error) {
-            console.error("Error:", error);
+        if (!folderId) {
+            return res.status(400).json({ message: "Folder ID is required" });
         }
-    };
 
-    sendRequest();
+        await redisClient.set("telex:return_url", return_url, "EX", 86400);
+        await redisClient.set("drive:config", JSON.stringify({ baseURL, folderId }), "EX", 86400);
+        // console.log("✅ Configuration stored:", { baseURL, folderId });
+        // await redisClient.del("drive:config");
 
+        // Publish a message indicating configuration has been updated
+        await redisClient.publish("drive:configUpdated", "new config");
 
+        await getChanges();
 
-    res.status(200).json({ status: "Success" })
-}
+        // Send a response back to the caller
+        const data = dataStore.fileChangeData
+        await sendNotification(data); 
 
-// export default telexWebhook;
+        res.status(200).json({ status: "Success", message: "Google Drive webhook is active" });
+
+    } catch (error) {
+        console.error("❌ Error:", error.message);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+export default telexWebhook;

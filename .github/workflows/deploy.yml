@@ -32,6 +32,19 @@ jobs:
 
             PROJECT_DIR="/root/telex-gdrive-notifier"
             REPO_URL="git@github.com:na-cho-dev/telex-gdrive-notifier.git"
+            REDIS_SERVICE="redis-server"
+
+            # Install Redis if not installed
+            if ! command -v redis-server &> /dev/null; then
+                echo "Installing Redis..."
+                sudo apt update && sudo apt install -y redis-server
+                sudo systemctl enable redis-server --now
+            fi
+
+            # Ensure Redis is running
+            echo "Ensuring Redis is running..."
+            sudo systemctl start redis-server
+            sudo systemctl status redis-server --no-pager
             
             if [ ! -d "$PROJECT_DIR" ]; then
                 echo "Project directory does not exist. Creating..."
