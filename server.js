@@ -22,15 +22,15 @@ app.get('/', (req, res) => {
 });
 
 app.listen(PORT, async () => {
-    console.log(`🚀 Server is running on PORT ${PORT} : host http://localhost:${PORT}`);
+    console.log(`🚀 Server is running on PORT ${PORT}`);
   
     // 🚀 Check if config exists, otherwise wait for pub/sub event
     const config = await redisClient.get("drive:config");
     if (config) {
-    //   console.log("✅ Configuration found in Redis. Starting Drive Watch...");
+      console.log("✅   Configuration found in Redis. Starting Drive Watch...");
       await startDriveWatch();
     } else {
-    //   console.log("⚠️ No configuration found for Drive watch. Waiting for updates...");
+      console.log("⚠️   No configuration found for Drive watch. Waiting for updates...");
     }
   });
   
@@ -40,8 +40,8 @@ app.listen(PORT, async () => {
     await subscriber.connect();
   
     await subscriber.subscribe("drive:configUpdated", async () => {
-      console.log("🔔 Received Event: drive:configUpdated");
-      console.log("🚀 New configuration published. Starting Drive Watch...");
+      console.log("🔔   Received Event: drive:configUpdated");
+      console.log("🚀   New configuration published. Starting Drive Watch...");
       await startDriveWatch();
     });
   })();
