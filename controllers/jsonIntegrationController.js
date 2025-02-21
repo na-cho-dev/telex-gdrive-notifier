@@ -1,7 +1,8 @@
-const jsonIntegration = (req, res) => {
+// import { getConfig } from "../config/config.js";
 
-  const baseUrl = req.protocol + "://" + req.get("host");
-  console.log("Base URL:", baseUrl)
+const jsonIntegration = (req, res) => {
+  // const { baseURL } = getConfig();
+  const baseURL = req.protocol + "://" + req.get("host");
 
   const integration_json_data = {
     "data": {
@@ -13,7 +14,7 @@ const jsonIntegration = (req, res) => {
         "app_name": "Telex GDrive Notifier",
         "app_description": "Telex GDrive Notifier is a lightweight service that monitors Google Drive and sends real-time backup notifications to a Telex Channel 🚀",
         "app_logo": "https://iili.io/2ybBmwQ.png",
-        "app_url": baseUrl,
+        "app_url": baseURL,
         "background_color": "#fff"
       },
       "is_active": true,
@@ -35,7 +36,7 @@ const jsonIntegration = (req, res) => {
         }
       ],
       "target_url": "",
-      "tick_url": `${baseUrl}/telex-webhook`
+      "tick_url": `${baseURL}/telex-webhook`
     }
   }
 
