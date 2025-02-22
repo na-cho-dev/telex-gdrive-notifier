@@ -1,5 +1,6 @@
 import express from 'express'
 import cors from 'cors'
+import http from 'http'
 import redisClient from "./database/redisClient.js";
 // import bodyParser from 'body-parser'
 import jsonIntegrationRouter from './routers/jsonIntegrationRouter.js'
@@ -17,7 +18,8 @@ app.use((req, res, next) => {
   const start = Date.now();
   res.on("finish", () => {
       const duration = Date.now() - start;
-      console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} - ${res.statusCode} (${duration}ms)`);
+      const statusText = http.STATUS_CODES[res.statusCode] || "UNKNOWN"; // Get status text
+      console.log(`[${new Date().toISOString()}] - [${req.method} ${req.url} HTTP/${req.httpVersion}] - ${res.statusCode} ${statusText} (${duration}ms)`);
   });
   next();
 });
