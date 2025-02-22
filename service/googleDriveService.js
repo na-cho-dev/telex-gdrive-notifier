@@ -15,7 +15,7 @@ export const drive = google.drive({ version: "v3", auth });
 
 export const watchDriveFolder = async (baseURL, folderId) => {
     const webhookURL = `${baseURL}/gdrive-webhook`;
-    const devWebhookURL = "https://telexgdrivenotifier.live/gdrive-webhook"
+    const devWebhookURL = "https://c21c-197-211-63-36.ngrok-free.app/gdrive-webhook"
 
     // console.log("📌 Base URL:", baseURL);
     // console.log("📌 Folder ID:", folderId);
