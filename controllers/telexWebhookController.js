@@ -14,6 +14,7 @@ const telexWebhook = async (req, res) => {
         console.log("Base URL:", baseURL);
 
         if (!folderId) {
+            console.log("Folder ID is required!")
             return res.status(400).json({ message: "Folder ID is required" });
         }
 
