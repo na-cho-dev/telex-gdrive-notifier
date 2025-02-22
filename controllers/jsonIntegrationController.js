@@ -42,7 +42,7 @@ const jsonIntegration = (req, res) => {
           "label": "Folder ID",
           "type": "text",
           "required": true,
-          "default": "103QnFCkx6PIv25Pxt3rE1uRkNun0ZKiT"
+          "default": ""
         }
       ],
       "tick_url": `${baseURL}/tick`,
