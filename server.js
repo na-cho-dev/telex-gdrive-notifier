@@ -17,7 +17,7 @@ app.use((req, res, next) => {
   const start = Date.now();
   res.on("finish", () => {
       const duration = Date.now() - start;
-      console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} - ${res.statusCode} (${duration}ms)`);
+      console.log(`[${new Date().toISOString()}] ${req.ip} - ${req.method} ${req.url} HTTP/${req.httpVersion} - ${res.statusCode} (${duration}ms) - ${req.get("user-agent")}`);
   });
   next();
 });
