@@ -13,13 +13,23 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(cors())
 // app.use(bodyParser)
+app.use((req, res, next) => {
+  const start = Date.now();
+  res.on("finish", () => {
+      const duration = Date.now() - start;
+      console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} - ${res.statusCode} (${duration}ms)`);
+  });
+  next();
+});
 app.use(jsonIntegrationRouter);
 app.use(telexWebhookRouter);
 app.use(driveWebhookRouter);
 
+
 app.get('/', (req, res) => {
     res.status(200).json({message: 'Telex Drive Backup Notofier!'});
 });
+
 
 app.listen(PORT, async () => {
     console.log(`🚀 Server is running on PORT ${PORT}`);
