@@ -72,7 +72,7 @@ export const getChanges = async () => {
         });
     
         if (!res.data.changes || res.data.changes.length === 0) {
-            // console.log("✅ No new changes detected.");
+            console.log("✅ No new changes detected.");
             return;
         }
     
