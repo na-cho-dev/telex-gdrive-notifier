@@ -46,7 +46,7 @@ const jsonIntegration = (req, res) => {
         }
       ],
       "target_url": "",
-      "tick_url": `${baseURL}/telex-webhook`
+      "tick_url": `${baseURL}/tick`
     }
   }
 
