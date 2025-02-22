@@ -7,10 +7,11 @@ import { sendNotification } from "../service/sendNotification.js";
 const telexWebhook = async (req, res) => {
     try {
         const { channel_id, return_url, settings } = req.body;
-        const baseURL = req.protocol + "://" + req.get("host");
+        const baseURL = req.protocol + "s://" + req.get("host");
         const folderId = settings.find(setting => setting.label === "Folder ID")?.default;
 
         console.log("Telex Webhook PINGED!!!");
+        console.log("Base URL:", baseURL);
 
         if (!folderId) {
             return res.status(400).json({ message: "Folder ID is required" });
