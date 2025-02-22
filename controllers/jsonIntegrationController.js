@@ -17,7 +17,7 @@ const jsonIntegration = (req, res) => {
         "app_url": baseURL,
         "background_color": "#fff"
       },
-      "is_active": true,
+      "is_active": false,
       "integration_category": "Cloud Services",
       "integration_type": "interval",
       "key_features": [
@@ -25,14 +25,24 @@ const jsonIntegration = (req, res) => {
         "File Backup",
         "Notify File Change"
       ],
-      "author": "NachoDev",
+      "permissions": {
+        "monitoring_user": {
+          "always_online": true,
+          "display_name": "Telex GDrive Notifier"
+        }
+      },
       "settings": [
-        {"label": "interval", "type": "text", "required": true, "default": "*/10 * * * * *"},
+        {
+          "label": "interval",
+          "type": "text",
+          "required": true,
+          "default": "*/10 * * * * *"
+        },
         {
           "label": "Folder ID",
           "type": "text",
           "required": true,
-          "default": ""
+          "default": "103QnFCkx6PIv25Pxt3rE1uRkNun0ZKiT"
         }
       ],
       "target_url": "",
