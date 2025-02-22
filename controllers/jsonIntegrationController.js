@@ -40,7 +40,7 @@ const jsonIntegration = (req, res) => {
     }
   }
 
-    res.status(200).json(integration_json_data)
+  res.status(200).json(integration_json_data)
 }
 
 export default jsonIntegration;
