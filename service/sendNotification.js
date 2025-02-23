@@ -9,12 +9,12 @@ export const sendNotification = async (data) => {
             return;
         }
 
-        // await axios.post(return_url, data, {
-        //     headers: {
-        //         "Accept": "application/json",
-        //         "Content-Type": "application/json",
-        //     },
-        // });
+        await axios.post(return_url, data, {
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+            },
+        });
 
         console.log("📢 Notification sent successfully to Telex App:", data);
 
