@@ -26,14 +26,11 @@ npm install
 ### 3️⃣ Set Up Environment Variables
 Create a .env file in the project root and configure it:
 ```sh
-PORT=3000
-GOOGLE_DRIVE_API_KEY=your-api-key
-GOOGLE_DRIVE_CLIENT_ID=your-client-id
-GOOGLE_DRIVE_CLIENT_SECRET=your-client-secret
-GOOGLE_DRIVE_REDIRECT_URI=your-redirect-uri
-GOOGLE_DRIVE_REFRESH_TOKEN=your-refresh-token
-REDIS_HOST=127.0.0.1
-REDIS_PORT=6379
+PORT=3300
+GOOGLE_SERVICE_ACCOUNT_PATH=./config/service-account.json
+GOOGLE_DRIVE_WEBHOOK_TOKEN='b996c1ef-89d5-4961-8950-0611d580d4f6'
+
+TELEX_ENV='dev'
 ```
 
 ### 4️⃣ Start the Application
@@ -45,6 +42,12 @@ or run in development mode
 ```sh
 npm run dev
 ```
+
+### Get Google Service Account
+- To get the json for the `GOOGLE_SERVICE_ACCOUNT_PATH`, click [here](https://docs.edna.io/kb/get-service-json/)
+
+- Then copy the file to `./config` in the app root directory.   
+
 
 ## 🔗 API Endpoints
 ### 🔹Webhook Setup
@@ -120,8 +123,34 @@ If you need to reset the Redis cache, run:
 redis-cli FLUSHALL
 ```
 
+## ✈️ Deployment
+The live app is deployed [here](https://telexgdrivenotifier.live)
+
+
+## ⚙️ Telex Integration
+- Add the integration JSON URL in your telex organization
+- Configure the Time Interval to update settings in app and check for file changes.
+- Configure the Folder ID to watch for file changes in that Folder.   
+
+You can easily copy a Google Drive folder ID using the following methods:
+
+1. Open Google Drive.
+2. Navigate to the folder you want to copy the ID from.
+3. Look at the URL in the address bar. It will look like this:
+```ruby
+https://drive.google.com/drive/folders/1AbCdEfGhIjKlMnOpQrStUvWxYz
+```
+The folder ID is the long string after /folders/ → 1AbCdEfGhIjKlMnOpQrStUvWxYz.    
+
+4. Copy and use it.
+
+## 📷 Screenshot
+![Telex Test Image](./docs/telex_test_image.png)
+
+
+
 ## 📜 License
 This project is licensed under the **MIT License**.
 
 ## 📬 Contact
-For support or contributions, reach out at your-email@example.com.
+For support or contributions, reach out at nachodev369@gmail.com
