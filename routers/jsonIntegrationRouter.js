@@ -1,7 +1,7 @@
-import express from 'express';
+import express from "express";
 const router = express.Router();
-import jsonIntegration from '../controllers/jsonIntegrationController.js';
+import jsonIntegration from "../controllers/jsonIntegrationController.js";
 
-router.get('/integration.json', jsonIntegration);
+router.get("/integration.json", jsonIntegration);
 
 export default router;
