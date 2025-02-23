@@ -59,7 +59,7 @@ export const getChanges = async () => {
     try {
         let pageToken = await redisClient.get("googleDrivePageToken");
         if (!pageToken) {
-            console.warn("⚠️ No page token found. Fetching a new one...");
+            console.warn("⚠️    No page token found. Fetching a new one...");
             pageToken = await getStartPageToken();
         }
 
@@ -68,8 +68,6 @@ export const getChanges = async () => {
             spaces: "drive",
             fields: "newStartPageToken, changes(file(id, name, mimeType, trashed, modifiedTime, lastModifyingUser(displayName, emailAddress)))"
         });
-
-        let hasSentNotification = false;
 
         if (res.data.changes?.length > 0) {
             const uniqueChanges = new Map();
@@ -107,7 +105,8 @@ export const getChanges = async () => {
 
                     await sendNotification(dataStore.fileChangeData);
                     console.log(`🗑️ File Moved to Trash: ${change.file.name} (ID: ${fileId})`);
-                    hasSentNotification = true;
+                    // ✅ Set lastFileChangeTime when a change is detected
+                    await redisClient.set("lastFileChangeTime", Date.now().toString(), "EX", 86400);
                 } else {
                     const lastNotified = await redisClient.get(`lastNotified:${fileId}`);
                     if (lastNotified && new Date(modifiedTime) <= new Date(lastNotified)) continue;
@@ -123,32 +122,9 @@ export const getChanges = async () => {
 
                     await sendNotification(dataStore.fileChangeData);
                     console.log(`🔄 File Changed: ${change.file.name} (ID: ${fileId})`);
-                    hasSentNotification = true;
+                    // ✅ Set lastFileChangeTime when a change is detected
+                    await redisClient.set("lastFileChangeTime", Date.now().toString(), "EX", 86400);
                 }
-            }
-        }
-
-        // 🛑 Check Redis before sending "No Latest Changes"
-        if (!hasSentNotification) {
-            const lastNoChangesTime = await redisClient.get("lastNoChangesSent");
-
-            if (!lastNoChangesTime || Date.now() - Number(lastNoChangesTime) > 60 * 1000) { 
-                // Only send if more than 60 seconds since last notification
-                console.log("✅ No latest changes detected after processing.");
-
-                dataStore.fileChangeData = {
-                    event_name: "No Latest Changes",
-                    message: "There are no new changes in the Google Drive folder.",
-                    status: "success",
-                    username: "Telex GDrive Notifier Bot"
-                };
-
-                await sendNotification(dataStore.fileChangeData);
-
-                // Store the timestamp of this notification
-                await redisClient.set("lastNoChangesSent", Date.now());
-            } else {
-                // console.log("⚠️ Skipping duplicate 'No Latest Changes' notification.");
             }
         }
 
