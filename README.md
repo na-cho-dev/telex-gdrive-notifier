@@ -44,7 +44,7 @@ npm run dev
 ```
 
 ### Get Google Service Account
-- To get the json for the `GOOGLE_SERVICE_ACCOUNT_PATH`, click [here](GOOGLE_SERVICE_ACCOUNT_PATH)
+- To get the json for the `GOOGLE_SERVICE_ACCOUNT_PATH`, click [here](https://docs.edna.io/kb/get-service-json/)
 
 - Then copy the file to `./config` in the app root directory.   
 
@@ -123,16 +123,28 @@ If you need to reset the Redis cache, run:
 redis-cli FLUSHALL
 ```
 
-## Deployment
+## ✈️ Deployment
 The live app is deployed [here](https://telexgdrivenotifier.live)
 
 
-## Telex Integration
+## ⚙️ Telex Integration
 - Add the integration JSON URL in your telex organization
 - Configure the Time Interval to update settings in app and check for file changes.
-- Configure the Folder ID to watch for file changes in that Folder.
+- Configure the Folder ID to watch for file changes in that Folder.   
 
-## Screenshot
+You can easily copy a Google Drive folder ID using the following methods:
+
+1. Open Google Drive.
+2. Navigate to the folder you want to copy the ID from.
+3. Look at the URL in the address bar. It will look like this:
+```ruby
+https://drive.google.com/drive/folders/1AbCdEfGhIjKlMnOpQrStUvWxYz
+```
+The folder ID is the long string after /folders/ → 1AbCdEfGhIjKlMnOpQrStUvWxYz.    
+
+4. Copy and use it.
+
+## 📷 Screenshot
 ![Telex Test Image](./docs/telex_test_image.png)
 
 
