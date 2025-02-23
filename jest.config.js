@@ -1,5 +1,5 @@
 export default {
-  testEnvironment: 'node',
+  testEnvironment: "node",
   collectCoverage: true,
   coverageThreshold: {
     global: {
@@ -9,5 +9,9 @@ export default {
       statements: 80,
     },
   },
-  testPathIgnorePatterns: ['/node_modules/'],
+  testPathIgnorePatterns: ["/node_modules/"],
+  transform: {
+    "^.+\\.jsx?$": "babel-jest",
+  },
+  setupFiles: ["./jest.setup.js"],
 };
