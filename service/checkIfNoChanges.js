@@ -14,7 +14,7 @@ export const checkIfNoChanges = async () => {
 
     console.log(`⏳ Time since last file change: ${timeSinceLastChange / 1000} sec`);
 
-    return timeSinceLastChange > 120000; // No changes in the last 2 minutes
+    return timeSinceLastChange > 120000;
 };
 
 
