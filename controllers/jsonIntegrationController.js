@@ -14,7 +14,7 @@ const jsonIntegration = (req, res) => {
         app_description:
           "Telex GDrive Notifier is a lightweight service that monitors Google Drive and sends real-time backup notifications to a Telex Channel 🚀",
         app_logo: "https://iili.io/2ybBmwQ.png",
-        app_name: "Telex GDrive Notifier",
+        app_name: "Google Drive Backup Notifier",
         app_url: baseURL,
         background_color: "#fff",
       },
