@@ -26,14 +26,11 @@ npm install
 ### 3️⃣ Set Up Environment Variables
 Create a .env file in the project root and configure it:
 ```sh
-PORT=3000
-GOOGLE_DRIVE_API_KEY=your-api-key
-GOOGLE_DRIVE_CLIENT_ID=your-client-id
-GOOGLE_DRIVE_CLIENT_SECRET=your-client-secret
-GOOGLE_DRIVE_REDIRECT_URI=your-redirect-uri
-GOOGLE_DRIVE_REFRESH_TOKEN=your-refresh-token
-REDIS_HOST=127.0.0.1
-REDIS_PORT=6379
+PORT=3300
+GOOGLE_SERVICE_ACCOUNT_PATH=./config/service-account.json
+GOOGLE_DRIVE_WEBHOOK_TOKEN='b996c1ef-89d5-4961-8950-0611d580d4f6'
+
+TELEX_ENV='dev'
 ```
 
 ### 4️⃣ Start the Application
@@ -45,6 +42,12 @@ or run in development mode
 ```sh
 npm run dev
 ```
+
+### Get Google Service Account
+- To get the json for the `GOOGLE_SERVICE_ACCOUNT_PATH`, click [here](GOOGLE_SERVICE_ACCOUNT_PATH)
+
+- Then copy the file to `./config` in the app root directory.   
+
 
 ## 🔗 API Endpoints
 ### 🔹Webhook Setup
@@ -120,8 +123,22 @@ If you need to reset the Redis cache, run:
 redis-cli FLUSHALL
 ```
 
+## Deployment
+The live app is deployed [here](https://telexgdrivenotifier.live)
+
+
+## Telex Integration
+- Add the integration JSON URL in your telex organization
+- Configure the Time Interval to update settings in app and check for file changes.
+- Configure the Folder ID to watch for file changes in that Folder.
+
+## Screenshot
+![Telex Test Image](./docs/telex_test_image.png)
+
+
+
 ## 📜 License
 This project is licensed under the **MIT License**.
 
 ## 📬 Contact
-For support or contributions, reach out at your-email@example.com.
+For support or contributions, reach out at nachodev369@gmail.com
