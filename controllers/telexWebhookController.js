@@ -11,7 +11,7 @@ const telexWebhook = async (req, res) => {
         const folderId = settings.find(setting => setting.label === "Folder ID")?.default;
 
         console.log("Telex Webhook PINGED!!!");
-        console.log("Base URL:", baseURL);
+        // console.log("Base URL:", baseURL);
 
         if (!folderId) {
             console.log("Folder ID is required!")
@@ -29,8 +29,8 @@ const telexWebhook = async (req, res) => {
         await getChanges();
 
         // Send a response back to the caller
-        const data = dataStore.fileChangeData
-        await sendNotification(data); 
+        // const data = dataStore.fileChangeData
+        // await sendNotification(data); 
 
         res.status(202).json({ status: "Success", message: "Google Drive webhook is active" });
 
