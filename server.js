@@ -58,7 +58,7 @@ if (process.env.TELEX_ENV !== "test") {
     await subscriber.connect();
 
     await subscriber.subscribe("drive:configUpdated", async () => {
-      console.log("🔔   Received Event: drive:configUpdated");
+      // console.log("🔔   Received Event: drive:configUpdated");
       console.log("🚀   New configuration published. Starting Drive Watch...");
       await startDriveWatch();
     });

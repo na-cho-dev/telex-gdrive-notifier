@@ -17,6 +17,8 @@ const telexWebhook = async (req, res) => {
 
     await redisClient.set("telex:return_url", return_url, "EX", 86400);
 
+    console.log("Telex Webhook PINGED!!!");
+
     if (!folderId) {
       console.log("Folder ID is required!");
       dataStore.fileChangeData = {
@@ -29,8 +31,6 @@ const telexWebhook = async (req, res) => {
       await sendNotification(dataStore.fileChangeData);
       return res.status(400).json({ message: "Folder ID is required" });
     }
-
-    console.log("Telex Webhook PINGED!!!");
     // console.log("Base URL:", baseURL);
 
     await redisClient.set(
@@ -41,7 +41,7 @@ const telexWebhook = async (req, res) => {
     );
 
     // Publish a message indicating configuration has been updated
-    await redisClient.publish("drive:configUpdated", "new config");
+    await redisClient.publish("drive:configUpdated", "New Config");
 
     if (await checkIfNoChanges()) {
       await sendNoChangesNotification();
@@ -49,11 +49,13 @@ const telexWebhook = async (req, res) => {
       await getChanges();
     }
 
-    res
-      .status(202)
-      .json({ status: "Success", message: "Google Drive webhook is active" });
+    res.status(202).json({
+      status: "Success",
+      message: "Configuration Updated Successfully",
+    });
   } catch (error) {
     console.error("❌ Error:", error.message);
+    console.error("❌ Stack Trace:", error.stack);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
