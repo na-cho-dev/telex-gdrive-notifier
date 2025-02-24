@@ -1,4 +1,4 @@
-name: CI App Test
+name: CI
 
 on:
   push:
@@ -20,7 +20,7 @@ jobs:
           - 6379:6379
 
     steps:
-      - name: Checkout Code
+      - name: Checkout code
         uses: actions/checkout@v2
 
       - name: Set up Node.js
@@ -28,10 +28,10 @@ jobs:
         with:
           node-version: "16"
 
-      - name: Install Required Dependencies
+      - name: Install dependencies
         run: npm install
 
-      - name: Set Up .env File
+      - name: Set up .env file
         run: |
           echo "PORT=3300" >> .env
           echo "GOOGLE_SERVICE_ACCOUNT_PATH=./config/service-account.json" >> .env
@@ -39,5 +39,5 @@ jobs:
           echo "TELEX_ENV='dev'" >> .env
           echo "DEV_WEBHOOK_URL='https://5465-197-211-63-36.ngrok-free.app'" >> .env
 
-      - name: Run Tests
+      - name: Run tests
         run: npm test

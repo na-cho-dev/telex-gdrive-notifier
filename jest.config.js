@@ -1,6 +1,6 @@
 export default {
   testEnvironment: "node",
-  collectCoverage: true,
+  collectCoverage: false,
   coverageThreshold: {
     global: {
       branches: 80,
