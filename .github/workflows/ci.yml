@@ -1,0 +1,43 @@
+name: CI App Test
+
+on:
+  push:
+    branches:
+      - main
+      - feat/gdrive-notifier
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "22"
+
+      - name: Install Required Dependencies
+        run: npm install
+
+      - name: Set Up .env File
+        run: |
+          echo "PORT=3300" >> .env
+          echo "GOOGLE_SERVICE_ACCOUNT_PATH=./config/service-account.json" >> .env
+          echo "GOOGLE_DRIVE_WEBHOOK_TOKEN='b996c1ef-89d5-4961-8950-0611d580d4f6'" >> .env
+          echo "TELEX_ENV='dev'" >> .env
+          echo "DEV_WEBHOOK_URL='https://5465-197-211-63-36.ngrok-free.app'" >> .env
+
+      - name: Run Tests
+        run: npm test
