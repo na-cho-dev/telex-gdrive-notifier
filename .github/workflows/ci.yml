@@ -20,18 +20,18 @@ jobs:
           - 6379:6379
 
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v2
 
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: "22"
+          node-version: "23"
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: npm install
 
-      - name: Set up .env file
+      - name: Set Up .env File
         run: |
           echo "PORT=3300" >> .env
           echo "GOOGLE_SERVICE_ACCOUNT_PATH=./config/service-account.json" >> .env
@@ -39,5 +39,5 @@ jobs:
           echo "TELEX_ENV='dev'" >> .env
           echo "DEV_WEBHOOK_URL='https://5465-197-211-63-36.ngrok-free.app'" >> .env
 
-      - name: Run tests
+      - name: Run Tests
         run: npm test

@@ -72,7 +72,7 @@ export const getChanges = async () => {
       pageToken,
       spaces: "drive",
       fields:
-        "newStartPageToken, changes(file(id, name, mimeType, trashed, modifiedTime, lastModifyingUser(displayName, emailAddress)))",
+        "newStartPageToken, changes(file(id, name, mimeType, trashed, modifiedTime, parents, permissions, lastModifyingUser(displayName, emailAddress)))",
     });
 
     if (res.data.changes?.length > 0) {
@@ -107,7 +107,7 @@ export const getChanges = async () => {
           await redisClient.set(`trashedNotified:${fileId}`, "1", "EX", 86400);
 
           dataStore.fileChangeData = {
-            event_name: `${change.file.name} was Trashed 🗑️`,
+            event_name: `File ${change.file.name} was Trashed 🗑️`,
             message: `File Name: "${change.file.name}"\nFile ID: ${fileId}\nModified Time: ${change.file.modifiedTime}\nModified By: ${change.file.lastModifyingUser.displayName} (${change.file.lastModifyingUser.emailAddress}).\nMIME type: ${change.file.mimeType}.`,
             status: "success",
             username: "Telex GDrive Notifier Bot",
