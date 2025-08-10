@@ -1,25 +1,33 @@
-import { google } from "googleapis";
+import { google, drive_v3 } from "googleapis";
 import dotenv from "dotenv";
 import path from "path";
-import redisClient from "../database/redisClient.js";
-import { dataStore } from "./dataStore.js";
-import { sendNotification } from "./sendNotification.js";
+import redisClient from "../database/redisClient";
+import { dataStore } from "./dataStore";
+import { sendNotification } from "./sendNotification";
+import { WatchResponse } from "../types/index";
+
+dotenv.config();
 
 const serviceAccountPath = process.env.GOOGLE_SERVICE_ACCOUNT_PATH;
+if (!serviceAccountPath) {
+  throw new Error(
+    "GOOGLE_SERVICE_ACCOUNT_PATH environment variable is required"
+  );
+}
+
 const auth = new google.auth.GoogleAuth({
   keyFile: path.resolve(serviceAccountPath),
   scopes: ["https://www.googleapis.com/auth/drive"],
 });
 
-dotenv.config();
 export const drive = google.drive({ version: "v3", auth });
 
-export const watchDriveFolder = async (baseURL, folderId) => {
+export const watchDriveFolder = async (
+  baseURL: string,
+  folderId: string
+): Promise<WatchResponse | undefined> => {
   const webhookURL = `${baseURL}/gdrive-webhook`;
   const devWebhookURL = `${process.env.DEV_WEBHOOK_URL}/gdrive-webhook`;
-
-  // console.log("📌 Base URL:", baseURL);
-  // console.log("📌 Folder ID:", folderId);
 
   try {
     const response = await drive.files.watch({
@@ -29,13 +37,18 @@ export const watchDriveFolder = async (baseURL, folderId) => {
         type: "web_hook",
         address: process.env.TELEX_ENV === "prod" ? webhookURL : devWebhookURL,
         payload: true,
-        token: process.env.GOOGLE_DRIVE_WEBHOOK_TOKEN,
+        token: process.env.GOOGLE_DRIVE_WEBHOOK_TOKEN ?? null,
       },
     });
 
-    // console.log("Webhook URL:", response.config.data.address)
+    if (
+      !response.data.id ||
+      !response.data.resourceId ||
+      !response.data.expiration
+    ) {
+      throw new Error("Invalid watch response from Google Drive API");
+    }
 
-    // Store channel details in Redis or a database
     await redisClient.set(
       response.data.id,
       JSON.stringify({
@@ -44,27 +57,34 @@ export const watchDriveFolder = async (baseURL, folderId) => {
       }),
       "EX",
       86400
-    ); // Store for 1 day (adjust as needed)
+    );
 
     console.log("✅ Watching Google Drive folder for changes...");
     console.log("📡 Webhook response:", response.data);
-    return response.data;
+
+    return response.data as WatchResponse;
   } catch (error) {
-    console.error("❌ Failed to set up Google Drive watcher:", error.message);
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
+    console.error("❌ Failed to set up Google Drive watcher:", errorMessage);
+    return undefined;
   }
 };
 
-export const getStartPageToken = async () => {
+export const getStartPageToken = async (): Promise<string> => {
   const res = await drive.changes.getStartPageToken();
+  if (!res.data.startPageToken) {
+    throw new Error("Failed to get start page token from Google Drive API");
+  }
+
   await redisClient.set("googleDrivePageToken", res.data.startPageToken);
   return res.data.startPageToken;
 };
 
-export const getChanges = async () => {
+export const getChanges = async (): Promise<void> => {
   try {
     let pageToken = await redisClient.get("googleDrivePageToken");
     if (!pageToken) {
-      // console.warn("⚠️    No page token found. Fetching a new one...");
       pageToken = await getStartPageToken();
     }
 
@@ -75,18 +95,23 @@ export const getChanges = async () => {
         "newStartPageToken, changes(file(id, name, mimeType, trashed, modifiedTime, lastModifyingUser(displayName, emailAddress)))",
     });
 
-    if (res.data.changes?.length > 0) {
-      const uniqueChanges = new Map();
+    if (res.data.changes?.length && res.data.changes.length > 0) {
+      const uniqueChanges = new Map<string, drive_v3.Schema$Change>();
+
       for (const change of res.data.changes) {
-        if (!change.file || !change.file.id) continue;
+        if (!change.file?.id) continue;
+
         const fileId = change.file.id;
-        const currentModified = new Date(change.file.modifiedTime).getTime();
+        const currentModified = new Date(
+          change.file.modifiedTime || ""
+        ).getTime();
 
         if (uniqueChanges.has(fileId)) {
           const existingChange = uniqueChanges.get(fileId);
           const existingModified = new Date(
-            existingChange.file.modifiedTime
+            existingChange?.file?.modifiedTime || ""
           ).getTime();
+
           if (currentModified > existingModified) {
             uniqueChanges.set(fileId, change);
           }
@@ -96,7 +121,10 @@ export const getChanges = async () => {
       }
 
       for (const [fileId, change] of uniqueChanges.entries()) {
+        if (!change.file) continue;
+
         const modifiedTime = change.file.modifiedTime;
+        if (!modifiedTime) continue;
 
         if (change.file.trashed) {
           const trashNotified = await redisClient.get(
@@ -108,7 +136,7 @@ export const getChanges = async () => {
 
           dataStore.fileChangeData = {
             event_name: `${change.file.name} was Trashed 🗑️`,
-            message: `File Name: "${change.file.name}"\nFile ID: ${fileId}\nModified Time: ${change.file.modifiedTime}\nModified By: ${change.file.lastModifyingUser.displayName} (${change.file.lastModifyingUser.emailAddress}).\nMIME type: ${change.file.mimeType}.`,
+            message: `File Name: "${change.file.name}"\nFile ID: ${fileId}\nModified Time: ${modifiedTime}\nModified By: ${change.file.lastModifyingUser?.displayName} (${change.file.lastModifyingUser?.emailAddress}).\nMIME type: ${change.file.mimeType}.`,
             status: "success",
             username: "Telex GDrive Notifier Bot",
           };
@@ -117,7 +145,7 @@ export const getChanges = async () => {
           console.log(
             `🗑️ File Moved to Trash: ${change.file.name} (ID: ${fileId})`
           );
-          // ✅ Set lastFileChangeTime when a change is detected
+
           await redisClient.set(
             "lastFileChangeTime",
             Date.now().toString(),
@@ -126,8 +154,12 @@ export const getChanges = async () => {
           );
         } else {
           const lastNotified = await redisClient.get(`lastNotified:${fileId}`);
-          if (lastNotified && new Date(modifiedTime) <= new Date(lastNotified))
+          if (
+            lastNotified &&
+            new Date(modifiedTime) <= new Date(lastNotified)
+          ) {
             continue;
+          }
 
           await redisClient.set(
             `lastNotified:${fileId}`,
@@ -138,14 +170,14 @@ export const getChanges = async () => {
 
           dataStore.fileChangeData = {
             event_name: `${change.file.name} was Modified 🔄`,
-            message: `File Name: "${change.file.name}"\nFile ID: ${fileId}\nModified Time: ${change.file.modifiedTime}\nModified By: ${change.file.lastModifyingUser.displayName} (${change.file.lastModifyingUser.emailAddress}).\nMIME type: ${change.file.mimeType}.`,
+            message: `File Name: "${change.file.name}"\nFile ID: ${fileId}\nModified Time: ${modifiedTime}\nModified By: ${change.file.lastModifyingUser?.displayName} (${change.file.lastModifyingUser?.emailAddress}).\nMIME type: ${change.file.mimeType}.`,
             status: "success",
             username: "Telex GDrive Notifier Bot",
           };
 
           await sendNotification(dataStore.fileChangeData);
           console.log(`🔄 File Changed: ${change.file.name} (ID: ${fileId})`);
-          // ✅ Set lastFileChangeTime when a change is detected
+
           await redisClient.set(
             "lastFileChangeTime",
             Date.now().toString(),
@@ -160,7 +192,9 @@ export const getChanges = async () => {
       await redisClient.set("googleDrivePageToken", res.data.newStartPageToken);
     }
   } catch (error) {
-    console.error("❌ Error fetching changes:", error.message);
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
+    console.error("❌ Error fetching changes:", errorMessage);
     throw error;
   }
 };

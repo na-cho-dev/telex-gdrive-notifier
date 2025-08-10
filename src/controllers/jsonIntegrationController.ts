@@ -1,10 +1,10 @@
-// import { getConfig } from "../config/config.js";
+import { Request, Response } from "express";
+import { JsonIntegrationData } from "../types/index";
 
-const jsonIntegration = (req, res) => {
-  // const { baseURL } = getConfig();
+const jsonIntegration = (req: Request, res: Response): Response => {
   const baseURL = req.protocol + "s://" + req.get("host");
 
-  const jsonIntegration = {
+  const jsonIntegrationData: JsonIntegrationData = {
     data: {
       date: {
         created_at: "2025-02-22",
@@ -51,7 +51,7 @@ const jsonIntegration = (req, res) => {
     },
   };
 
-  res.status(200).json(jsonIntegration);
+  return res.status(200).json(jsonIntegrationData);
 };
 
 export default jsonIntegration;

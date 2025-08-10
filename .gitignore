@@ -1,5 +1,21 @@
+# Node.js dependencies
 node_modules/
+dist/
+config/
+
+# Environment variables
 .env
+.env.local
+.env.production
+
+# Google Service Account
 config/service-account.json
+config/*.json
+
+# Other sensitive files
+*.key
+*.pem
 .vscode
+
+# Test coverage
 coverage/

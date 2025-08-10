@@ -1,16 +1,37 @@
 import request from "supertest";
-import app from "../server.js";
-import redisClient from "../database/redisClient.js";
-import {
-  checkIfNoChanges,
-  sendNoChangesNotification,
-} from "../service/checkIfNoChanges.js";
+import app from "../src/server";
+import redisClient from "../src/database/redisClient";
+import { checkIfNoChanges } from "../src/service/checkIfNoChanges";
+
+// Clean up before and after each test
+beforeAll(async () => {
+  await redisClient.connect();
+});
+
+// Clean up after each test (don't reconnect each time)
+afterEach(async () => {
+  try {
+    // Clean up test data after each test
+    await redisClient.del("telex:return_url");
+    await redisClient.del("drive:config");
+    await redisClient.del("lastFileChangeTime");
+    await redisClient.del("lastNoChangesSent");
+    await redisClient.del("noChangesLock");
+  } catch (error) {
+    console.warn("Warning: Could not clean up Redis keys:", error);
+  }
+});
+
+afterAll(async () => {
+  // Close Redis connection
+  await redisClient.quit();
+});
 
 describe("GET /", () => {
   it("should return a 200 status and a welcome message", async () => {
     const res = await request(app).get("/");
     expect(res.statusCode).toEqual(200);
-    expect(res.body).toHaveProperty("message", "Telex Drive Backup Notofier!");
+    expect(res.body).toHaveProperty("message", "Telex Drive Backup Notifier!");
   });
 });
 

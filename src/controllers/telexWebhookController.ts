@@ -1,13 +1,18 @@
-import redisClient from "../database/redisClient.js";
-import { getChanges } from "../service/googleDriveService.js";
+import { Response } from "express";
+import redisClient from "../database/redisClient";
+import { getChanges } from "../service/googleDriveService";
 import {
   checkIfNoChanges,
   sendNoChangesNotification,
-} from "../service/checkIfNoChanges.js";
-import { sendNotification } from "../service/sendNotification.js";
-import { dataStore } from "../service/dataStore.js";
+} from "../service/checkIfNoChanges";
+import { sendNotification } from "../service/sendNotification";
+import { dataStore } from "../service/dataStore";
+import { TelexWebhookRequest } from "../types/index";
 
-const telexWebhook = async (req, res) => {
+const telexWebhook = async (
+  req: TelexWebhookRequest,
+  res: Response
+): Promise<void> => {
   try {
     const { channel_id, return_url, settings } = req.body;
     const baseURL = req.protocol + "s://" + req.get("host");
@@ -27,11 +32,11 @@ const telexWebhook = async (req, res) => {
         username: "Telex GDrive Notifier Bot",
       };
       await sendNotification(dataStore.fileChangeData);
-      return res.status(400).json({ message: "Folder ID is required" });
+      res.status(400).json({ message: "Folder ID is required" });
+      return;
     }
 
     console.log("Telex Webhook PINGED!!!");
-    // console.log("Base URL:", baseURL);
 
     await redisClient.set(
       "drive:config",
@@ -53,7 +58,9 @@ const telexWebhook = async (req, res) => {
       .status(202)
       .json({ status: "Success", message: "Google Drive webhook is active" });
   } catch (error) {
-    console.error("❌ Error:", error.message);
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
+    console.error("❌ Error:", errorMessage);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };

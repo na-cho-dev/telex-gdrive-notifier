@@ -2,15 +2,16 @@
   "name": "telex-drive-notifier",
   "version": "1.0.0",
   "description": "Monitors a Google Drive folder for file changes (new, modified, or deleted files) and sends real-time notifications to Telex Channel",
-  "main": "server.js",
-  "type": "module",
+  "main": "dist/server.js",
   "scripts": {
+    "build": "tsc",
+    "prebuild": "rm -rf dist",
     "test": "TELEX_ENV=test jest",
-    "start": "node --env-file=.env server.js",
-    "dev": "node --watch --env-file=.env server.js",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "format": "prettier --write ."
+    "start": "node dist/server.js",
+    "dev": "tsx watch src/server.ts",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "format": "prettier --write src/**/*.ts"
   },
   "repository": {
     "type": "git",
@@ -33,14 +34,28 @@
   "devDependencies": {
     "@babel/core": "^7.26.9",
     "@babel/preset-env": "^7.26.9",
-    "@eslint/js": "^9.21.0",
+    "@babel/preset-typescript": "^7.27.1",
+    "@types/babel__core": "^7.20.5",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.11.17",
+    "@types/node-cron": "^3.0.11",
+    "@types/supertest": "^6.0.2",
+    "@types/uuid": "^10.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.18.0",
+    "@typescript-eslint/parser": "^8.18.0",
     "babel-jest": "^29.7.0",
     "eslint": "^9.21.0",
-    "eslint-config-prettier": "^10.0.1",
+    "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.3",
     "globals": "^16.0.0",
     "jest": "^29.7.0",
     "prettier": "^3.5.2",
-    "supertest": "^7.0.0"
+    "supertest": "^7.0.0",
+    "ts-jest": "^29.4.0",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.7.1",
+    "typescript": "^5.3.3"
   }
 }
